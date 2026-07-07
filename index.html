@@ -2,7 +2,7 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
     <title>Happy Anniversary💗</title>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;600&display=swap" rel="stylesheet">
     <style>
@@ -16,8 +16,9 @@
             background-attachment: fixed;
             font-family: 'Prompt', sans-serif;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
-            height: 100vh; overflow: hidden;
+            height: 100vh; width: 100vw; overflow: hidden;
             touch-action: none;
+            overscroll-behavior: none;
             user-select: none;
             position: relative;
         }
@@ -190,6 +191,11 @@
     </div>
 
     <script>
+        // บล็อกการเลื่อนหน้าจอและดึงหน้าจอ (Rubber-banding/Bounce Effect) บน iOS และ Android
+        document.body.addEventListener('touchmove', function(e) {
+            e.preventDefault();
+        }, { passive: false });
+
         window.addEventListener('DOMContentLoaded', () => {
             const music = document.getElementById('bg-music');
             music.play().catch(e => {
