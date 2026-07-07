@@ -2,12 +2,22 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Happy Anniversary💗</title>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;600&display=swap" rel="stylesheet">
     <style>
-        body {
+        /* ล็อก html และ body ไม่ให้มี scrollbar และบล็อกการเคลื่อนไหวทุกชนิด */
+        html, body {
             margin: 0; padding: 0;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+            position: fixed; /* ล็อกหน้าจอให้อยู่กับที่บนมือถือ */
+            touch-action: none; /* ห้ามใช้การลากนิ้วเพื่อเลื่อนหรือซูมหน้าจอ */
+            -webkit-overflow-scrolling: auto;
+        }
+
+        body {
             /* แก้ไขพื้นหลังใช้ไฟล์ photo11.jpg ล็อกพื้นหลังห้ามขยับ */
             background-image: url('photo11.jpg');
             background-size: cover;
@@ -16,10 +26,8 @@
             background-attachment: fixed;
             font-family: 'Prompt', sans-serif;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
-            height: 100vh; width: 100vw; overflow: hidden;
-            touch-action: none;
-            overscroll-behavior: none;
             user-select: none;
+            -webkit-user-select: none;
             position: relative;
         }
 
@@ -94,7 +102,6 @@
             cursor: pointer; pointer-events: auto;
             object-fit: cover;
             border-radius: 4px;
-            /* เอาแอนิเมชัน bounceSeed ออกเพื่อให้คงค่าเอียงสุ่มตอนกระจายตัวและไม่อยู่ในระเบียบเกินไป */
         }
 
         @keyframes bounceSeed {
@@ -112,6 +119,7 @@
             background: rgba(0,0,0,0); display: none;
             justify-content: center; align-items: center; z-index: 300;
             transition: background-color 0.5s ease;
+            touch-action: none;
         }
         .view-card {
             width: 75%; max-width: 260px;
@@ -124,7 +132,7 @@
         .view-card img { width: 100%; height: auto; display: block; margin-bottom: 12px; border-radius: 2px; }
         .view-card .view-caption { text-align: center; color: #444; font-size: 0.85rem; font-weight: 600; }
 
-        #touch-area { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 6; cursor: pointer; }
+        #touch-area { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 6; cursor: pointer; touch-action: none; }
         #watering-can-img { position: fixed; width: 80px; height: 80px; pointer-events: none; display: none; z-index: 100; transform: rotate(-20deg); }
 
         #box-btn {
@@ -141,6 +149,7 @@
             background: rgba(0,0,0,0); display: none;
             justify-content: center; align-items: center; z-index: 400;
             transition: background-color 0.5s ease;
+            touch-action: none;
         }
         #note-img-display {
             width: 95%; 
@@ -191,10 +200,20 @@
     </div>
 
     <script>
-        // บล็อกการเลื่อนหน้าจอและดึงหน้าจอ (Rubber-banding/Bounce Effect) บน iOS และ Android
-        document.body.addEventListener('touchmove', function(e) {
+        // บล็อกพฤติกรรมการลากเพื่อเลื่อนหน้าจอ (Rubber-banding / Bounce Scroll) บน iOS และ Android
+        document.addEventListener('touchmove', function(e) {
             e.preventDefault();
         }, { passive: false });
+
+        // บล็อกการซูมหน้าจอเมื่อดับเบิ้ลแท็บ (Double Tap Zoom)
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', function(e) {
+            const now = (new Date()).getTime();
+            if (now - lastTouchEnd <= 300) {
+                e.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, false);
 
         window.addEventListener('DOMContentLoaded', () => {
             const music = document.getElementById('bg-music');
@@ -295,7 +314,6 @@
                 plantImg.src = 'bouquet.png'; 
                 
                 setTimeout(() => {
-                    /* พอกด ? แล้วกลายเป็นช่อดอกไม้ จะใส่คลาสเคลื่อนไหวส่ายดุ๊กดิ๊กเพื่อดึงดูดสายตาทันที */
                     plantImg.classList.add('attract-wiggle');
                 }, 50);
 
@@ -308,9 +326,8 @@
                     plantImg.style.cursor = 'pointer';
                     plantImg.onclick = () => {
                         bgMusic.play().catch(e => console.log("Music play blocked"));
-                        /* พอกดเสร็จแล้ว รูปและซองจดหมายเด้งออกมา ค่อยหยุดขยับช่อดอกไม้ */
                         plantImg.classList.remove('attract-wiggle');
-                        plantImg.style.transform = "scale(1.15)"; // คืนค่าขนาดปกติหลังหยุดส่าย
+                        plantImg.style.transform = "scale(1.15)"; 
                         explode();
                     };
                 }, 100);
@@ -323,8 +340,8 @@
 
             const positions = [
                 {x: -110, y: -140}, {x: 0, y: -150}, {x: 110, y: -140},
-                {x: -120, y: -50},                   {x: 120, y: -50}, 
-                {x: -120, y: 40},                    {x: 120, y: 40},  
+                {x: -120, y: -50},                    {x: 120, y: -50}, 
+                {x: -120, y: 40},                     {x: 120, y: 40},  
                 {x: -110, y: 130},  {x: 0, y: 150},  {x: 110, y: 130}, 
                 {x: 0, y: -40}                                         
             ];
@@ -348,8 +365,7 @@
                 const finalX = pos.x + jitterX;
                 const finalY = pos.y + jitterY;
                 
-                /* แก้ไขส่วนนี้เพื่อให้รูปภาพเด้งกระจายออกมามีความเอียงเล็กน้อยและมีสไตล์สุ่มดูไม่เป็นระเบียบเกินไป */
-                const rotate = (Math.random() - 0.5) * 25; // สุ่มมุมเอียงติดลบถึงบวกเฉลี่ยประมาณ -12.5 ถึง 12.5 องศา
+                const rotate = (Math.random() - 0.5) * 25;
 
                 setTimeout(() => {
                     img.style.left = `calc(50% + ${finalX}px)`;
@@ -367,7 +383,6 @@
             const boxRotate = (Math.random() - 0.5) * 20;
 
             boxBtn.style.display = "block";
-            /* เพิ่มคลาสเอนิเมชันเฉพาะให้กล่องจดหมาย */
             boxBtn.classList.add('box-bounce');
             setTimeout(() => {
                 boxBtn.style.left = `calc(50% + ${boxFinalX}px)`;
